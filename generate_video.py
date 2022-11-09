@@ -9,8 +9,8 @@ from PIL import Image
 os.mkdir('/tmp/frames')
 
 frames = 180
-print("Choose a directory to save the video to")
-save_dir = filedialog.askdirectory(mustexist=True)
+print("/Users/ben/Documents/GitHub/object-tracking")
+save_dir = "/Users/ben/Documents/GitHub/object-tracking"
 
 if not save_dir:
     print("You must select a directory to save the video to!")

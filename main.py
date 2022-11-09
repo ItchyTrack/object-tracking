@@ -1,4 +1,6 @@
+import math
 import os
+from random import randint, random
 import shutil
 import sys
 from tkinter import filedialog
@@ -11,7 +13,7 @@ import scanner
 
 def create_frames():
     print("Select a video")
-    video_path = filedialog.askopenfilename()
+    video_path = "/Users/ben/Documents/GitHub/object-tracking/red.mp4"
     capture = cv2.VideoCapture(video_path)
     total_video_frames = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
 
@@ -50,7 +52,14 @@ if __name__ == "__main__":
 
 images = os.listdir('/tmp/frames')
 
-for i in range(len(images)):
-    pimage = Image.open(f'/tmp/frames/frame{i}.jpg')
+point = Image.new(mode='RGB', size=(1, 1), color=(0, 255, 0))
+
+for i in range(math.floor(len(images)/6)):
+    pimage = Image.open(f'/tmp/frames/frame{i*6}.jpg')
     predicted = scanner.scanImage(pimage)
     print(predicted)
+    pimage.paste(point.resize((4, 4)), predicted)
+    
+    pimage.save(f'/tmp/newframes/frame{i}.jpg')
+    
+os.system(f"cd /tmp/newframes && ffmpeg -r 10 -i frame%d.jpg /Users/ben/Downloads/predicted.mp4")

@@ -1,5 +1,6 @@
 import math
-
+from telnetlib import XASCII
+from numpy import unravel_index
 import fastbook
 import numpy as np
 from fastai.vision.core import PILImage
@@ -13,8 +14,8 @@ def predict(image):
 
 def scanImage(img):
     size = img.size
-    scanImageSize = 50
-    stepSize = 10
+    scanImageSize = 30
+    stepSize = 15
     out = FinalOut(size)
     for yi in range(math.floor((size[1] - scanImageSize)/stepSize)):
         ypos = yi * stepSize
@@ -32,18 +33,29 @@ def scanImage(img):
 class FinalOut():
     def __init__(self, size):
         self.image = np.zeros((size[0], size[1]))
+        self.addedImages = np.zeros((size[0], size[1]))
+
 
     def addValues(self, xpos, ypos, value, size):
+        #print(f"found {value} at x: {xpos} y: {ypos}")
         for yi in range(size):
             for xi in range(size):
+                #print(f"found 2 {value} at x: {xi + xpos} y: {yi + ypos}")
                 self.image[yi + ypos][xi + xpos] += value
+                self.addedImages[yi + ypos][xi + xpos] += 1
+
 
     def getHighestPos(self):
-        img = Image.fromarray(self.image, 'F')
-        img.show()
-        highestItem = [0, 0]
+        #self.image = self.image / self.addedImages
+        xs = []
+        ys = []
         for yi in range(len(self.image)):
             for xi in range(len(self.image[yi])):
-                if self.image[yi][xi] > self.image[highestItem[1]][highestItem[0]]:
-                    highestItem = [xi, yi]
-        return highestItem
+                if abs(self.image[yi][xi] - self.image.max()) < 0.1 :
+                    xs.append(xi)
+                    ys.append(yi)
+
+        return [math.floor(np.average(xs)), math.floor(np.average(ys))]
+        #print(self.image.max())
+        #print(self.image[highestItem[1]][highestItem[0]])
+        #print(self.addedImages[highestItem[1]][highestItem[0]])
