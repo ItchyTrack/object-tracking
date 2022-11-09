@@ -1,8 +1,13 @@
-import cv2
 import os
+import shutil
 import sys
 from tkinter import filedialog
-import shutil
+
+import cv2
+from PIL import Image
+
+import scanner
+
 
 def create_frames():
     print("Select a video")
@@ -26,7 +31,8 @@ def create_frames():
             break # finish loop at the end of the video
 
         frame_number += 1
-
+    
+    print("Splitting frames... done")
 
 if __name__ == "__main__":
     # temporary folder for split frames
@@ -41,3 +47,10 @@ if __name__ == "__main__":
             create_frames()
         elif delete_tmp_frames == "n":
             print("Using frames specified in /tmp/frames.")
+
+images = os.listdir('/tmp/frames')
+
+for i in range(len(images)):
+    pimage = Image.open(f'/tmp/frames/frame{i}.jpg')
+    predicted = scanner.scanImage(pimage)
+    print(predicted)
