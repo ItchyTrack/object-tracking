@@ -1,6 +1,7 @@
 import math
 import os
 from random import randint, random
+from re import I
 import shutil
 import sys
 from tkinter import filedialog
@@ -64,15 +65,14 @@ def addLine(img, x1, y1, x2, y2):
 images = os.listdir('./tmp/frames')
 
 numberOfFrames = 0
-for i in range(math.floor(len(images))):
-    pimage = Image.open(f'./tmp/frames/frame{i}.jpg')
+for i in range(math.floor(len(images)/10)):
+    pimage = Image.open(f'./tmp/frames/frame{i*10}.jpg')
     foundPoints = scanner.scanImage(pimage)
     print(i)
-    numberOfFrames += 1
     pimage = addLine(pimage, foundPoints[0][0], foundPoints[0][1], foundPoints[1][0], foundPoints[0][1])
     pimage = addLine(pimage, foundPoints[0][0], foundPoints[1][1], foundPoints[1][0], foundPoints[1][1])
     pimage = addLine(pimage, foundPoints[0][0], foundPoints[0][1], foundPoints[0][0], foundPoints[1][1])
     pimage = addLine(pimage, foundPoints[1][0], foundPoints[0][1], foundPoints[1][0], foundPoints[1][1])
-    pimage.save(f'./tmp/newframes/frame{60}.jpg')
-    
-os.system(f"cd ./tmp/newframes && ffmpeg -r {numberOfFrames} -i frame%d.jpg ./predictedVideos")
+    pimage.save(f'./tmp/newframes/frame{i}.jpg')
+
+os.system(f"cd ./tmp/newframes && ffmpeg -r 60 -i frame%d.jpg ./predictedVideos")

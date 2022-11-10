@@ -17,7 +17,7 @@ def predict(image):
 def scanImage(img):
     size = img.size
     scanImageSize = 30
-    stepSize = 20
+    stepSize = 15
     out = FinalOut(size)
     for yi in range(math.floor((size[1] - scanImageSize)/stepSize)):
         ypos = yi * stepSize
@@ -41,9 +41,7 @@ class FinalOut():
     def addValues(self, xpos, ypos, value, size):
         #print(f"found {value} at x: {xpos} y: {ypos}")
         value = self.image[ypos : ypos + size, xpos : xpos + size] + (value * np.ones((size, size)))
-        edge_coordinates = (1,1)  # changed
-        slicer = tuple(slice(edge, edge+i) for edge, i in zip(edge_coordinates, value.shape))
-        self.image[slicer] = value
+        self.image[tuple(slice(edge, edge+i) for edge, i in zip((ypos, xpos), value.shape))] = value
         
         #for yi in range(size):
         #    for xi in range(size):
