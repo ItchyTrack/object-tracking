@@ -7,16 +7,17 @@ import numpy as np
 from fastai.vision.core import PILImage
 from PIL import Image
 
-def predict(image):
-    learn = fastbook.load_learner("model.pkl")
+# import network
+learn = fastbook.load_learner("model.pkl")
 
+def predict(image):
     pred_class, pred_idx, probabilities = learn.predict(image)
     return probabilities[1]
 
 def scanImage(img):
     size = img.size
-    scanImageSize = 25
-    stepSize = 15
+    scanImageSize = 30
+    stepSize = 20
     out = FinalOut(size)
     for yi in range(math.floor((size[1] - scanImageSize)/stepSize)):
         ypos = yi * stepSize
@@ -39,11 +40,16 @@ class FinalOut():
 
     def addValues(self, xpos, ypos, value, size):
         #print(f"found {value} at x: {xpos} y: {ypos}")
-        for yi in range(size):
-            for xi in range(size):
-                #print(f"found 2 {value} at x: {xi + xpos} y: {yi + ypos}")
-                self.image[yi + ypos][xi + xpos] += value
-                self.addedImages[yi + ypos][xi + xpos] += 1
+        value = self.image[ypos : ypos + size, xpos : xpos + size] + (value * np.ones((size, size)))
+        edge_coordinates = (1,1)  # changed
+        slicer = tuple(slice(edge, edge+i) for edge, i in zip(edge_coordinates, value.shape))
+        self.image[slicer] = value
+        
+        #for yi in range(size):
+        #    for xi in range(size):
+        #        #print(f"found 2 {value} at x: {xi + xpos} y: {yi + ypos}")
+        #        self.image[yi + ypos][xi + xpos] += value
+        #        self.addedImages[yi + ypos][xi + xpos] += 1
 
 
     def getHighestPos(self):
