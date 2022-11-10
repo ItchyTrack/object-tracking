@@ -50,16 +50,29 @@ if __name__ == "__main__":
         elif delete_tmp_frames == "n":
             print("Using frames specified in /tmp/frames.")
 
+def addLine(img, x1, y1, x2, y2):
+    point = Image.new(mode='RGB', size=(1, 1), color=(0, 255, 0))
+
+    for iy in range(y2 - y1 + 1):
+        y = y1 + iy
+        for ix in range(x2 - x1 + 1):
+            x = x1 + ix
+            img.paste(point.resize((2,2)), [x, y])
+    return img
+
+
 images = os.listdir('/tmp/frames')
 
-point = Image.new(mode='RGB', size=(1, 1), color=(0, 255, 0))
-
-for i in range(math.floor(len(images)/6)):
-    pimage = Image.open(f'/tmp/frames/frame{i*6}.jpg')
-    predicted = scanner.scanImage(pimage)
-    print(predicted)
-    pimage.paste(point.resize((4, 4)), predicted)
-    
+numberOfFrames = 0
+for i in range(math.floor(len(images)/2)):
+    pimage = Image.open(f'/tmp/frames/frame{i*2}.jpg')
+    foundPoints = scanner.scanImage(pimage)
+    print(i)
+    numberOfFrames += 1
+    pimage = addLine(pimage, foundPoints[0][0], foundPoints[0][1], foundPoints[1][0], foundPoints[0][1])
+    pimage = addLine(pimage, foundPoints[0][0], foundPoints[1][1], foundPoints[1][0], foundPoints[1][1])
+    pimage = addLine(pimage, foundPoints[0][0], foundPoints[0][1], foundPoints[0][0], foundPoints[1][1])
+    pimage = addLine(pimage, foundPoints[1][0], foundPoints[0][1], foundPoints[1][0], foundPoints[1][1])
     pimage.save(f'/tmp/newframes/frame{i}.jpg')
     
-os.system(f"cd /tmp/newframes && ffmpeg -r 10 -i frame%d.jpg /Users/ben/Downloads/predicted.mp4")
+os.system(f"cd /tmp/newframes && ffmpeg -r {numberOfFrames} -i frame%d.jpg /Users/ben/Documents/GitHub/object-tracking/predictedVideos")

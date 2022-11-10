@@ -1,5 +1,6 @@
 import math
 from telnetlib import XASCII
+from xml.etree.ElementTree import XML
 from numpy import unravel_index
 import fastbook
 import numpy as np
@@ -14,7 +15,7 @@ def predict(image):
 
 def scanImage(img):
     size = img.size
-    scanImageSize = 30
+    scanImageSize = 25
     stepSize = 15
     out = FinalOut(size)
     for yi in range(math.floor((size[1] - scanImageSize)/stepSize)):
@@ -47,15 +48,28 @@ class FinalOut():
 
     def getHighestPos(self):
         #self.image = self.image / self.addedImages
-        xs = []
-        ys = []
+        foundPoints = []
         for yi in range(len(self.image)):
             for xi in range(len(self.image[yi])):
-                if abs(self.image[yi][xi] - self.image.max()) < 0.1 :
-                    xs.append(xi)
-                    ys.append(yi)
-
-        return [math.floor(np.average(xs)), math.floor(np.average(ys))]
+                if abs(self.image[yi][xi] - self.image.max()) < 0.2 :
+                    foundPoints.append([xi, yi])
+        #math.floor(np.average(xs)), math.floor(np.average(ys))
+        xL = 0
+        yL = 0
+        xS = len(self.image[0])
+        yS = len(self.image)
+        for point in foundPoints:
+            if point[0] > xL:
+                xL = point[0]
+            if point[1] > yL:
+                yL = point[1]
+            if point[0] < xS:
+                xS = point[0]
+            if point[1] < yS:
+                yS = point[1]
+            
+            
+        return [[xS, yS], [xL, yL]]
         #print(self.image.max())
         #print(self.image[highestItem[1]][highestItem[0]])
         #print(self.addedImages[highestItem[1]][highestItem[0]])
