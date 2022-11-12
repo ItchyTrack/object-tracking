@@ -75,18 +75,14 @@ framSkip = 1
 
 
 for i in range(math.floor(len(os.listdir('./tmp/frames'))/framSkip)):
-    pimage = Image.open(f'./tmp/frames/frame{i*framSkip}.jpg')
-    foundArea = scanner.scanImage(pimage)
+    image = Image.open(f'./tmp/frames/frame{i*framSkip}.jpg')
+    foundArea = scanner.scanImage(image)
     print(i)
-    pimage = addLine(
-        pimage, foundArea[0][0], foundArea[0][1], foundArea[1][0], foundArea[0][1])
-    pimage = addLine(
-        pimage, foundArea[0][0], foundArea[1][1], foundArea[1][0], foundArea[1][1])
-    pimage = addLine(
-        pimage, foundArea[0][0], foundArea[0][1], foundArea[0][0], foundArea[1][1])
-    pimage = addLine(
-        pimage, foundArea[1][0], foundArea[0][1], foundArea[1][0], foundArea[1][1])
-    pimage.save(f'./tmp/newframes/frame{i}.jpg')
+    image = addLine(image, foundArea[0][0], foundArea[0][1], foundArea[1][0], foundArea[0][1])
+    image = addLine(image, foundArea[0][0], foundArea[1][1], foundArea[1][0], foundArea[1][1])
+    image = addLine(image, foundArea[0][0], foundArea[0][1], foundArea[0][0], foundArea[1][1])
+    image = addLine(image, foundArea[1][0], foundArea[0][1], foundArea[1][0], foundArea[1][1])
+    image.save(f'./tmp/newframes/frame{i}.jpg')
 
-os.system(
-    f"cd ./tmp/newframes && ffmpeg -r {60/framSkip} -i frame%d.jpg ../../predictedVideos/predicted.mp4")
+os.system(f"cd ./tmp/newframes && ffmpeg -r {60/framSkip} -i frame%d.jpg ../../predictedVideos/predicted.mp4")
+shutil.rmtree('./tmp/newframes')

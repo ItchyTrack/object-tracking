@@ -28,15 +28,14 @@ def scanImage(img):
     '''
     scaningImage, xOffset, yOffset = findObjectArea(img, 3)
     size = scaningImage.size
-    scanImageSize = 10
+    scanImageSize = 15
     stepSize = 5
     out = FinalOut(size)
     for yi in range(math.floor((size[1] - scanImageSize)/stepSize)):
         ypos = yi * stepSize
         for xi in range(math.floor((size[0] - scanImageSize)/stepSize)):
             xpos = xi * stepSize
-            scan_image = scaningImage.crop(
-                (xpos, ypos, xpos + scanImageSize, ypos + scanImageSize))
+            scan_image = scaningImage.crop((xpos, ypos, xpos + scanImageSize, ypos + scanImageSize))
             out.addValues(
                 xpos,
                 ypos,
@@ -95,7 +94,7 @@ class FinalOut():
         adds a array (size, size) filled with value
         to self.image at [ypos][xpos]
         '''
-        if (xpos + size) < self.image[0].size and (ypos + size) < self.image.size:
+        if self.image[ypos: ypos + size, xpos: xpos + size].shape == (size, size):
             value = self.image[ypos: ypos + size, xpos: xpos + size] + (value * np.ones((size, size)))
             self.image[tuple(slice(edge, edge+i) for edge, i in zip((ypos, xpos), value.shape))] = value
 
