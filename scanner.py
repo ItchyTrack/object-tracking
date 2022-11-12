@@ -26,23 +26,27 @@ def scanImage(img):
     returns the 2 corners of a rectangle that surrounds the object
     [ [smallest X, smallest Y], [largest X, Largest Y] ]
     '''
-    scaningImage, xOffset, yOffset = findObjectArea(img, 3)
-    size = scaningImage.size
-    scanImageSize = 15
-    stepSize = 5
+    imgSize = img.size
+    scaningArea = findObjectArea(img, 8)
+    size = [scaningArea[2] - scaningArea[0], scaningArea[3] - scaningArea[1]]
+    scanImageSize = 10
+    stepSize = 4
     out = FinalOut(size)
-    for yi in range(math.floor((size[1] - scanImageSize)/stepSize)):
-        ypos = yi * stepSize
-        for xi in range(math.floor((size[0] - scanImageSize)/stepSize)):
-            xpos = xi * stepSize
-            scan_image = scaningImage.crop((xpos, ypos, xpos + scanImageSize, ypos + scanImageSize))
-            out.addValues(
-                xpos,
-                ypos,
-                float(predict(PILImage(scan_image))),
-                scanImageSize
-            )
-    return out.getHighestPos(xOffset, yOffset)
+    for yi in range(math.floor((size[1])/stepSize)):
+        ypos = yi * stepSize + scaningArea[1]
+        if imgSize[1] > ypos + scanImageSize:
+            for xi in range(math.floor((size[0])/stepSize)):
+                xpos = xi * stepSize + scaningArea[0]
+                if imgSize[0] > xpos + scanImageSize:
+                    scan_image = img.crop((xpos, ypos, xpos + scanImageSize, ypos + scanImageSize))
+                    out.addValues(
+                        xpos - scaningArea[0],
+                        ypos - scaningArea[1],
+                        float(predict(PILImage(scan_image))),
+                        scanImageSize
+                    )
+
+    return out.getHighestPos(scaningArea[0], scaningArea[1])
 
 
 def findObjectArea(image, numberOfSplit):
@@ -50,13 +54,13 @@ def findObjectArea(image, numberOfSplit):
     find the area of the image that the object is in
 
     returns:
-    a croped image that contains the object, the xpos of the image, the ypos of the image
+    the area that the object is in
     '''
     size = image.size
     xL = 0
     yL = 0
-    xS = image.size[0]
-    yS = image.size[1]
+    xS = size[0]
+    yS = size[1]
     splitSizeX = math.floor(size[0]/numberOfSplit)
     splitSizeY = math.floor(size[1]/numberOfSplit)
     out = FinalOut(size)
@@ -79,8 +83,8 @@ def findObjectArea(image, numberOfSplit):
     if (xS == 0 and yS == 0 and xL == image.size[0] and image.size[1]) or xS == image.size[0] and yS == image.size[1] and xL == 0 and yL == 0:
         return image, 0, 0
     else:
-        cropedImage = image.crop((xS, yS, xL, yL))
-        return cropedImage, xS, yS
+        
+        return [xS, yS, xL, yL]
 
 
 class FinalOut():
