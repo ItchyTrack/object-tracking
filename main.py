@@ -72,7 +72,7 @@ except FileExistsError:
     os.mkdir('./tmp/newframes')
 
 framSkip = 1
-
+importedVideoFPS = 60
 
 for i in range(math.floor(len(os.listdir('./tmp/frames'))/framSkip)):
     image = Image.open(f'./tmp/frames/frame{i*framSkip}.jpg')
@@ -84,5 +84,5 @@ for i in range(math.floor(len(os.listdir('./tmp/frames'))/framSkip)):
     image = addLine(image, foundArea[1][0], foundArea[0][1], foundArea[1][0], foundArea[1][1])
     image.save(f'./tmp/newframes/frame{i}.jpg')
 
-os.system(f"cd ./tmp/newframes && ffmpeg -r {60/framSkip} -i frame%d.jpg ../../predictedVideos/predicted.mp4")
+os.system(f"cd ./tmp/newframes && ffmpeg -r {importedVideoFPS/framSkip} -i frame%d.jpg ../../predictedVideos/predicted.mp4")
 shutil.rmtree('./tmp/newframes')

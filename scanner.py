@@ -27,10 +27,10 @@ def scanImage(img):
     [ [smallest X, smallest Y], [largest X, Largest Y] ]
     '''
     imgSize = img.size
-    scaningArea = findObjectArea(img, 8)
+    scaningArea = findObjectArea(img, 6)
     size = [scaningArea[2] - scaningArea[0], scaningArea[3] - scaningArea[1]]
-    scanImageSize = 10
-    stepSize = 4
+    scanImageSize = 8
+    stepSize = 2
     out = FinalOut(size)
     for yi in range(math.floor((size[1])/stepSize)):
         ypos = yi * stepSize + scaningArea[1]
